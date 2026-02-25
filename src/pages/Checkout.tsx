@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,11 +11,11 @@ import { toast } from "sonner";
 import { Truck, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const STANDARD_SHIPPING = 0; // free
+const STANDARD_SHIPPING = 0;
 
 export default function Checkout() {
   const { items, totalPrice } = useCart();
-  const { user, loading } = useAuth();
+  const { user, token, loading } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
 
@@ -70,15 +70,13 @@ export default function Checkout() {
         quantity: item.quantity,
       }));
 
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: {
-          lineItems,
-          shippingAddress: address,
-        },
+      const data = await apiFetch<{ url: string }>("/checkout/create-session", {
+        method: "POST",
+        token,
+        body: { lineItems, shippingAddress: address },
       });
 
-      if (error) throw error;
-      if (data?.url) {
+      if (data.url) {
         window.location.href = data.url;
       } else {
         throw new Error("No checkout URL returned");
@@ -100,11 +98,8 @@ export default function Checkout() {
         <form onSubmit={handleCheckout} className="grid grid-cols-1 lg:grid-cols-5 gap-10">
           {/* Left — Address + Delivery */}
           <div className="lg:col-span-3 space-y-8">
-            {/* Shipping Address */}
             <section className="space-y-5">
-              <h2 className="font-display text-lg tracking-wider text-foreground">
-                Shipping Address
-              </h2>
+              <h2 className="font-display text-lg tracking-wider text-foreground">Shipping Address</h2>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="font-body text-xs uppercase tracking-widest text-muted-foreground">Full Name</Label>
@@ -139,11 +134,8 @@ export default function Checkout() {
 
             <Separator />
 
-            {/* Delivery Option */}
             <section className="space-y-4">
-              <h2 className="font-display text-lg tracking-wider text-foreground">
-                Delivery
-              </h2>
+              <h2 className="font-display text-lg tracking-wider text-foreground">Delivery</h2>
               <div className="border border-primary rounded-sm p-4 flex items-center gap-4 bg-secondary/50">
                 <Truck size={20} className="text-foreground shrink-0" />
                 <div className="flex-1">
@@ -157,24 +149,16 @@ export default function Checkout() {
 
           {/* Right — Order Summary */}
           <aside className="lg:col-span-2 space-y-6">
-            <h2 className="font-display text-lg tracking-wider text-foreground">
-              Order Summary
-            </h2>
+            <h2 className="font-display text-lg tracking-wider text-foreground">Order Summary</h2>
             <div className="space-y-3">
               {items.map((item) => (
                 <div key={`${item.product.id}-${item.size}`} className="flex gap-3">
-                  <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className="w-14 h-18 object-cover rounded-sm bg-secondary"
-                  />
+                  <img src={item.product.image} alt={item.product.name} className="w-14 h-18 object-cover rounded-sm bg-secondary" />
                   <div className="flex-1">
                     <p className="font-body text-sm text-foreground">{item.product.name}</p>
                     <p className="font-body text-xs text-muted-foreground">Size: {item.size} · Qty: {item.quantity}</p>
                   </div>
-                  <span className="font-body text-sm text-foreground">
-                    ${(item.product.price * item.quantity).toFixed(2)}
-                  </span>
+                  <span className="font-body text-sm text-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>

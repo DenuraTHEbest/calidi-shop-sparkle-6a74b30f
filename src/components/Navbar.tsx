@@ -11,8 +11,8 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignOut = async () => {
-    await signOut();
+  const handleSignOut = () => {
+    signOut();
     toast.success("Signed out");
     navigate("/");
   };

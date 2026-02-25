@@ -1,61 +1,83 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from "react";
+import { apiFetch } from "@/lib/api";
+
+interface AuthUser {
+  id: string;
+  email: string;
+}
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: AuthUser | null;
+  token: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signOut: () => Promise<void>;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const TOKEN_KEY = "calidi_token";
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
   const [loading, setLoading] = useState(true);
 
+  // On mount / token change, fetch current user
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    if (!token) {
+      setUser(null);
       setLoading(false);
-    });
+      return;
+    }
 
-    return () => subscription.unsubscribe();
+    apiFetch<{ user: AuthUser }>("/auth/me", { token })
+      .then(({ user }) => setUser(user))
+      .catch(() => {
+        // Token invalid – clear it
+        localStorage.removeItem(TOKEN_KEY);
+        setToken(null);
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    try {
+      const data = await apiFetch<{ token: string; user: AuthUser }>("/auth/login", {
+        method: "POST",
+        body: { email, password },
+      });
+      localStorage.setItem(TOKEN_KEY, data.token);
+      setToken(data.token);
+      setUser(data.user);
+      return { error: null };
+    } catch (err) {
+      return { error: err as Error };
+    }
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error as Error | null };
-  };
+  const signUp = useCallback(async (email: string, password: string) => {
+    try {
+      await apiFetch("/auth/signup", {
+        method: "POST",
+        body: { email, password },
+      });
+      return { error: null };
+    } catch (err) {
+      return { error: err as Error };
+    }
+  }, []);
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: window.location.origin },
-    });
-    return { error: error as Error | null };
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
+  const signOut = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    setToken(null);
+    setUser(null);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, token, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
