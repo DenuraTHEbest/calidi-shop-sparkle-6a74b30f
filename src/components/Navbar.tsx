@@ -1,11 +1,21 @@
-import { ShoppingBag, Menu, X } from "lucide-react";
+import { ShoppingBag, Menu, X, User, LogOut } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const { totalItems, setIsOpen } = useCart();
+  const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out");
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -55,18 +65,39 @@ export default function Navbar() {
           </li>
         </ul>
 
-        <button
-          onClick={() => setIsOpen(true)}
-          className="relative text-foreground hover:text-muted-foreground transition-colors"
-          aria-label="Open cart"
-        >
+        <div className="flex items-center gap-3">
+          {user ? (
+            <button
+              onClick={handleSignOut}
+              className="text-foreground hover:text-muted-foreground transition-colors"
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut size={20} />
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              className="text-foreground hover:text-muted-foreground transition-colors"
+              aria-label="Sign in"
+              title="Sign in"
+            >
+              <User size={20} />
+            </Link>
+          )}
+          <button
+            onClick={() => setIsOpen(true)}
+            className="relative text-foreground hover:text-muted-foreground transition-colors"
+            aria-label="Open cart"
+          >
           <ShoppingBag size={22} />
           {totalItems > 0 && (
             <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-body text-primary-foreground">
               {totalItems}
             </span>
           )}
-        </button>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
