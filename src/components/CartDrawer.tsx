@@ -2,9 +2,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useCart } from "@/context/CartContext";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function CartDrawer() {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
+  const navigate = useNavigate();
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -98,7 +100,8 @@ export default function CartDrawer() {
               <Button
                 className="w-full bg-foreground text-background hover:bg-foreground/90 font-body uppercase tracking-widest text-sm py-6 rounded-sm"
                 onClick={() => {
-                  alert("Checkout coming soon!");
+                  setIsOpen(false);
+                  navigate("/checkout");
                 }}
               >
                 Checkout
