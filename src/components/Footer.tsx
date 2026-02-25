@@ -23,8 +23,8 @@ export default function Footer() {
         <div>
           <h4 className="font-body text-xs uppercase tracking-[0.3em] mb-4 text-background/60">Help</h4>
           <ul className="space-y-2 font-body text-sm text-background/80">
-            <li><span className="cursor-pointer hover:text-background transition-colors">Shipping & Returns</span></li>
-            <li><span className="cursor-pointer hover:text-background transition-colors">Size Guide</span></li>
+            <li><Link to="/shipping-returns" className="hover:text-background transition-colors">Shipping & Returns</Link></li>
+            <li><Link to="/size-guide" className="hover:text-background transition-colors">Size Guide</Link></li>
             <li><span className="cursor-pointer hover:text-background transition-colors">Contact Us</span></li>
             <li><span className="cursor-pointer hover:text-background transition-colors">FAQ</span></li>
           </ul>
