@@ -1,5 +1,22 @@
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+export interface Recommendation {
+  p_id: string;
+  name: string;
+  brand: string;
+  similarity_score: number;
+  image_base64?: string;
+}
+
+export async function getRecommendations(
+  productId: string,
+  top: number = 5
+): Promise<Recommendation[]> {
+  const res = await fetch(`${API_BASE}/recommendations/${productId}?top=${top}`);
+  if (!res.ok) throw new Error("Failed to fetch recommendations");
+  return res.json();
+}
+
 interface ApiOptions {
   method?: string;
   body?: unknown;
