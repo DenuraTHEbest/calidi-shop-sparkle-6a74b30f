@@ -9,6 +9,7 @@ import CartDrawer from "@/components/CartDrawer";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
+import ProductDetail from "./pages/ProductDetail";
 import ShippingReturns from "./pages/ShippingReturns";
 import SizeGuide from "./pages/SizeGuide";
 import Auth from "./pages/Auth";
@@ -32,6 +33,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/shipping-returns" element={<ShippingReturns />} />
               <Route path="/size-guide" element={<SizeGuide />} />
               <Route path="/auth" element={<Auth />} />
