@@ -9,6 +9,7 @@ import CartDrawer from "@/components/CartDrawer";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
+import ProductDetail from "./pages/ProductDetail";
 import ShippingReturns from "./pages/ShippingReturns";
 import SizeGuide from "./pages/SizeGuide";
 import Auth from "./pages/Auth";

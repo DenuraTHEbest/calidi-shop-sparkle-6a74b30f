@@ -64,14 +64,14 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <h3 className="font-display text-sm font-medium text-foreground">
+      <Link to={`/product/${product.id}`} className="block space-y-1">
+        <h3 className="font-display text-sm font-medium text-foreground hover:underline">
           {product.name}
         </h3>
         <p className="font-body text-sm text-muted-foreground">
           ${product.price}
         </p>
-      </div>
+      </Link>
     </div>
   );
 }
