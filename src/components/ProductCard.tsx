@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { Product } from "@/lib/types";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
