@@ -53,16 +53,6 @@ export default function Navbar() {
               Women
             </Link>
           </li>
-          <li>
-            <Link to="/shop?category=Men" className="hover:text-foreground transition-colors">
-              Men
-            </Link>
-          </li>
-          <li>
-            <Link to="/shop?category=Accessories" className="hover:text-foreground transition-colors">
-              Accessories
-            </Link>
-          </li>
         </ul>
 
         <div className="flex items-center gap-3">
