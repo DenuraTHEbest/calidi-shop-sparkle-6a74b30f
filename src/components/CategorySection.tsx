@@ -1,12 +1,8 @@
 import categoryWomen from "@/assets/category-women.png";
-import categoryMen from "@/assets/category-men.png";
-import categoryAccessories from "@/assets/category-accessories.png";
 import { Link } from "react-router-dom";
 
 const categories = [
   { name: "Women", image: categoryWomen },
-  { name: "Men", image: categoryMen },
-  { name: "Accessories", image: categoryAccessories },
 ];
 
 export default function CategorySection() {

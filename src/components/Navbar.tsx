@@ -97,8 +97,6 @@ export default function Navbar() {
             <li><Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors">Home</Link></li>
             <li><Link to="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors">Shop</Link></li>
             <li><Link to="/shop?category=Women" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors">Women</Link></li>
-            <li><Link to="/shop?category=Men" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors">Men</Link></li>
-            <li><Link to="/shop?category=Accessories" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors">Accessories</Link></li>
           </ul>
         </div>
       )}
